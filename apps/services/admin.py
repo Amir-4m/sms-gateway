@@ -16,16 +16,16 @@ class ServiceModelAdmin(admin.ModelAdmin):
     change_form_template = "services/admin/change-form.html"
 
     def random_secret_generator(self, length):
-        return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for i in range(length))
+        return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
     def response_change(self, request, obj):
         if "change-secret" in request.POST:
-            key = self.random_secret_generator(10)
-            while True:
-                if not Service.objects.filter(secret_key=key).exists():
-                    obj.secret_key = key
-                    obj.save()
-                    break
+            key = self.random_secret_generator(64)
+            while Service.objects.filter(secret_key=key).exists():
+                key = self.random_secret_generator(64)
 
+            obj.secret_key = key
+            obj.save()
             return HttpResponseRedirect(".")  # stay on the same detail page
+
         return super().response_change(request, obj)
