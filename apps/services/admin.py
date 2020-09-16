@@ -20,7 +20,12 @@ class ServiceModelAdmin(admin.ModelAdmin):
 
     def response_change(self, request, obj):
         if "change-secret" in request.POST:
-            obj.secret_key = self.random_secret_generator(10)
-            obj.save()
+            key = self.random_secret_generator(10)
+            while True:
+                if not Service.objects.filter(secret_key=key).exists():
+                    obj.secret_key = key
+                    obj.save()
+                    break
+
             return HttpResponseRedirect(".")  # stay on the same detail page
         return super().response_change(request, obj)
