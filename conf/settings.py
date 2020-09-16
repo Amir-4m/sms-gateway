@@ -85,6 +85,11 @@ DATABASES = {
         'PORT': config('DB_PORT', default='')
     },
 }
+CELERY_BROKER_URL = 'amqp://%(USER)s:%(PASS)s@%(HOST)s' % {
+    'USER': config('CELERY_USER'),
+    'PASS': config('CELERY_PASS'),
+    'HOST': config('CELERY_HOST'),
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

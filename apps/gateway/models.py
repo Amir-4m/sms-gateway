@@ -1,4 +1,4 @@
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -14,7 +14,7 @@ class Provider(models.Model):
     title = models.CharField(_('title'), max_length=120)
     properties = JSONField(_("properties"), default=dict)
     provider_code = models.CharField(_("provider code"), max_length=15, choices=PROVIDER_CODES, default=CODE_RAHYAB)
-    head_number = models.IntegerField(_('sms code'))
+    head_number = models.IntegerField(_('head number'))
     is_enable = models.BooleanField(default=True)
 
     class Meta:
@@ -37,3 +37,11 @@ class SMSGateway(models.Model):
 
     def __str__(self):
         return f"{self.provider} - {self.service}"
+
+
+class SentMessage(models.Model):
+    created_time = models.DateTimeField(_("created time"), auto_now_add=True)
+    sms_gateway = models.ForeignKey(SMSGateway, related_name='sent_messages', on_delete=models.PROTECT)
+    target_numbers = ArrayField(models.CharField(_('target number'), max_length=11))
+    status = models.CharField(_('status'), max_length=5)
+    recipient_id = models.CharField(_('recipient id'), max_length=100)
