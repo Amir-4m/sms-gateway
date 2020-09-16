@@ -43,5 +43,6 @@ class SentMessage(models.Model):
     created_time = models.DateTimeField(_("created time"), auto_now_add=True)
     sms_gateway = models.ForeignKey(SMSGateway, related_name='sent_messages', on_delete=models.PROTECT)
     target_numbers = ArrayField(models.CharField(_('target number'), max_length=11))
+    text = models.TextField(_('text'))
     status = models.CharField(_('status'), max_length=5)
     recipient_id = models.CharField(_('recipient id'), max_length=100)

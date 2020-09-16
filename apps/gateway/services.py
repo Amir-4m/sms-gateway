@@ -27,6 +27,7 @@ class SMSGatewayService:
         return SentMessage.objects.create(
             sms_gateway=sms_gateway,
             target_numbers=phone_numbers,
+            text=text,
             status=str(result.status.byte[0]),
             recipient_id=str(result.recId.long[0])
         )

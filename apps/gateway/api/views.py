@@ -16,10 +16,8 @@ class SendSMSAPIView(views.APIView):
         service = request.auth['service']
         serializer = SendSMSSerializer(data=request.data, context={'service': service})
         serializer.is_valid(raise_exception=True)
-        text = serializer.validated_data['text']
-        phone_numbers = serializer.validated_data['phone_numbers']
         sms_gateway = serializer.validated_data['sms_gateway']
+        for data in serializer.validated_data['data']:
+            send_message.delay(sms_gateway_id=sms_gateway.id, text=data['text'], phone_numbers=data['phone_numbers'])
 
-        send_message.delay(sms_gateway_id=sms_gateway.id, text=text, phone_numbers=phone_numbers)
-
-        return Response('message created in queue.')
+        return Response('messages created in queue.')

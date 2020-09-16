@@ -22,4 +22,4 @@ class ProviderAdmin(admin.ModelAdmin):
     list_display = ('id', 'sms_gateway', 'target_numbers', 'status', 'recipient_id', 'created_time')
     list_filter = ('sms_gateway__provider', 'sms_gateway__service')
     search_fields = ('sms_gateway__provider__head_number',)
-    readonly_fields = ('sms_gateway', 'target_numbers', 'status', 'recipient_id')
+    readonly_fields = ('sms_gateway', 'target_numbers', 'status', 'recipient_id', 'text')
