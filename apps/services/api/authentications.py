@@ -42,7 +42,6 @@ class ServiceAuthentication(authentication.BaseAuthentication):
         secret = self.get_service_secret_value(request)
         if not secret:  # no id passed in request headers
             raise exceptions.AuthenticationFailed('No such service')  # authentication did not succeed
-
         service = self.authenticate_credentials(secret)  # get the service
         anonymous_user = AnonymousUser()
         payload.update({'service': service})
@@ -53,10 +52,6 @@ class ServiceAuthentication(authentication.BaseAuthentication):
         """
         Returns an user of the existing service
         """
-        if not secret:
-            msg = _('Invalid payload.')
-            raise exceptions.AuthenticationFailed(msg)
-
         try:
             service = Service.objects.get(secret_key=secret)
         except Service.DoesNotExist:
