@@ -1,6 +1,3 @@
-import secrets
-import string
-
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 
