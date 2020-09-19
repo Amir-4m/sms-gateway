@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 
 from apps.services.models import Service
+from apps.services.utils import random_secret_generator
 
 
 @admin.register(Service)
@@ -15,14 +16,11 @@ class ServiceModelAdmin(admin.ModelAdmin):
 
     change_form_template = "services/admin/change-form.html"
 
-    def random_secret_generator(self, length):
-        return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(length))
-
     def response_change(self, request, obj):
         if "change-secret" in request.POST:
-            key = self.random_secret_generator(64)
+            key = random_secret_generator()
             while Service.objects.filter(secret_key=key).exists():
-                key = self.random_secret_generator(64)
+                key = random_secret_generator()
 
             obj.secret_key = key
             obj.save()
