@@ -17,4 +17,3 @@ Pillow
 zeep
 coverage==5.1
 mock==4.0.2
-drf-compound-fields

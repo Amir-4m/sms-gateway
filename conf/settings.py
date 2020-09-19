@@ -33,6 +33,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost', cast=Csv())
 INSTALLED_APPS = [
     'apps.services',
     'apps.gateway',
+    'drf_yasg',
 
     'django.contrib.admin',
     'django.contrib.auth',

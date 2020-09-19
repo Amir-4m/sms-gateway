@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import views
 from rest_framework.response import Response
 
@@ -12,6 +13,11 @@ class SendSMSAPIView(views.APIView):
     authentication_classes = (ServiceAuthentication,)
     permission_classes = (ServicePermission,)
 
+    @swagger_auto_schema(
+        operation_description='get a list of text - numbers and send the text to each number in the array',
+        request_body=SendSMSSerializer,
+        responses={200: "messages created in queue."}
+    )
     def post(self, request, *args, **kwargs):
         service = request.auth['service']
         serializer = SendSMSSerializer(data=request.data, context={'service': service})
