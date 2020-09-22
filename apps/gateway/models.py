@@ -33,7 +33,7 @@ class SMSGateway(models.Model):
     is_enable = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ('provider', 'service')
+        unique_together = (('provider', 'service'), ('priority', 'service'))
 
     def __str__(self):
         return f"{self.provider} - {self.service}"
