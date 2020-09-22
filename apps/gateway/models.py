@@ -29,7 +29,7 @@ class SMSGateway(models.Model):
     updated_time = models.DateTimeField(_("updated time"), auto_now=True)
     provider = models.ForeignKey(Provider, related_name='gateways', on_delete=models.PROTECT)
     service = models.ForeignKey('services.Service', related_name='gateways', on_delete=models.PROTECT)
-    priority = models.IntegerField(_('priority'), unique=True)
+    priority = models.IntegerField(_('priority'))
     is_enable = models.BooleanField(default=True)
 
     class Meta:
