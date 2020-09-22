@@ -5,7 +5,6 @@ stages:
 
 variables:
   PROJECT_DIR: "sms_gateway"
-  PROJECT_ABR: "smsgateway"
 
 build:
   stage: build
@@ -49,27 +48,6 @@ test:
   tags:
     - django
 
-.migrate:
-  stage: migrate
-  before_script:
-    - cp /var/www/$PROJECT_DIR/project/.env $CI_PROJECT_DIR/
-  script:
-    - source $CI_PROJECT_DIR/venv/bin/activate
-    - python manage.py makemigrations
-  after_script:
-    - rm $CI_PROJECT_DIR/.env
-  only:
-    changes:
-      - apps/*/models.py
-  tags:
-    - django
-    - staging
-
-#.deploy:
-#  before_script:
-#    - cd /var/www/$PROJECT_DIR/project/
-#    - source /var/www/$PROJECT_DIR/venv/bin/activate
-
 staging:
   stage: deploy
 #  extends: .deploy
@@ -82,12 +60,10 @@ staging:
     - python manage.py makemigrations
     - python manage.py migrate
     - uwsgi --reload /tmp/$PROJECT_DIR-master.pid
-    - supervisorctl restart $PROJECT_ABR:*
+    - supervisorctl restart PROJECT_DIR:*
   only:
     - develop
-#    - /^staging-.*$/
-#  except:
-#    - branches
+
   tags:
     - django
     - staging
@@ -103,7 +79,7 @@ production:
     - pip install -r requirements.txt
     - python manage.py migrate
     - uwsgi --reload /tmp/$PROJECT_DIR-master.pid
-    - supervisorctl restart $PROJECT_ABR:*
+    - supervisorctl restart PROJECT_DIR:*
   only:
     - /^release-.*$/
   except:
