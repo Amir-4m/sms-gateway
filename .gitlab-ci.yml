@@ -38,7 +38,7 @@ test:
   script:
     - source $CI_PROJECT_DIR/venv/bin/activate
     - python manage.py makemigrations
-    - coverage run run_tests.py
+    - coverage run manage.py test
     - coverage html
     - coverage report
   coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
