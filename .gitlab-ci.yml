@@ -32,10 +32,21 @@ test:
   before_script:
     - mkdir $CI_PROJECT_DIR/logs
     - cp /var/www/$PROJECT_DIR/project/.env $CI_PROJECT_DIR/
+    - cp /var/www/$PROJECT_DIR/project/.coveragerc $CI_PROJECT_DIR/
+
 
   script:
     - source $CI_PROJECT_DIR/venv/bin/activate
+    - python manage.py makemigrations
+    - coverage run run_tests.py
+    - coverage html
+    - coverage report
+  coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
+  artifacts:
+    paths:
+      - htmlcov
   after_script:
+    - rm $CI_PROJECT_DIR/apps/*/migrations/0*.py
     - rm $CI_PROJECT_DIR/.env
   cache:
     key: ${CI_COMMIT_REF_SLUG}
