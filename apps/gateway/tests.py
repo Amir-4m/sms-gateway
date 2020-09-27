@@ -60,3 +60,19 @@ class SendSMSAPITestCase(SendSMSBaseAPITestCase):
             'enter phone_number in the correct form!',
             status_code=status.HTTP_400_BAD_REQUEST
         )
+
+    def test_post_sms_no_gateway(self):
+        url = reverse('send-message')
+        data = {
+            'data': [{'text': 'this is a test message.', 'phone_numbers': ['09123456789']}]
+        }
+        service = Service.objects.last()
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + str(service.secret_key))
+        response = client.post(url, data=data, format='json')
+
+        self.assertContains(
+            response,
+            'there is no available sms gateway for this service!',
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
