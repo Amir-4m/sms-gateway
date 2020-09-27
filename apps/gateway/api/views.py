@@ -6,12 +6,14 @@ from apps.services.api.authentications import ServiceAuthentication
 from apps.services.api.permissions import ServicePermission
 
 from .serializers import SendSMSSerializer
+from .throttles import ServiceThrottle
 from ..tasks import send_message
 
 
 class SendSMSAPIView(views.APIView):
     authentication_classes = (ServiceAuthentication,)
     permission_classes = (ServicePermission,)
+    throttle_classes = (ServiceThrottle,)
 
     @swagger_auto_schema(
         operation_description='get a list of text - numbers and send the text to each number in the array',

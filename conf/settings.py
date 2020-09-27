@@ -135,3 +135,10 @@ MEDIA_URL = '/media/'
 FIXTURE_DIRS = (
     BASE_DIR / 'fixtures',
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES': {
+        'service': '1/minute',
+
+    }
+}
