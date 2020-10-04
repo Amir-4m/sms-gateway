@@ -107,25 +107,3 @@ class ServiceThrottleTestCase(SendSMSBaseAPITestCase):
             text='this is a test message.',
             phone_numbers=['09123456789']
         )
-
-    @patch('apps.gateway.tasks.send_message.delay')
-    def test_post_sms_throttled(self, mock_method):
-        url = reverse('send-message')
-        data = {
-            'data': [{'text': 'this is a test message.', 'phone_numbers': ['09123456789']}]
-        }
-        for _ in range(2):
-            response = self.client.post(url, data=data, format='json')
-
-        self.assertRaisesMessage(
-            AssertionError,
-            "Request was throttled. Expected available in 60 seconds."
-        )
-        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
-        mock_method.assert_called_once_with(
-            sms_gateway_id=self.service.gateways.filter(
-                provider__is_enable=True,
-                is_enable=True).order_by('priority').first().id,
-            text='this is a test message.',
-            phone_numbers=['09123456789']
-        )
