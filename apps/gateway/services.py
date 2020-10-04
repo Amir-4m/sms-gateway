@@ -1,8 +1,11 @@
+import logging
 import zeep
 from zeep.cache import InMemoryCache
 from zeep.transports import Transport
 
 from .models import SentMessage
+
+logger = logging.getLogger(__name__)
 
 
 class SMSGatewayService:
@@ -24,6 +27,9 @@ class SMSGatewayService:
         }
         client = zeep.Client(wsdl=wsdl, transport=self.transport)
         result = client.service.SendSms(**data)
+        logger.warning(
+            f'sending rahyab sms result for sms_gateway {sms_gateway.id}, text: {text}, phones:{phone_numbers}'
+        )
         return SentMessage.objects.create(
             sms_gateway=sms_gateway,
             target_numbers=phone_numbers,
