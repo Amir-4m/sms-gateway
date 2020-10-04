@@ -135,7 +135,19 @@ MEDIA_URL = '/media/'
 FIXTURE_DIRS = (
     BASE_DIR / 'fixtures',
 )
+CACHES = {
+    'default': {
+        'BACKEND': config('CACHE_BACKEND', default='django.core.cache.backends.locmem.LocMemCache'),
+        'LOCATION': config('CACHE_HOST', default=''),
+        'KEY_PREFIX': 'SMS_GATEWAY',
+    }
+}
 
+TEST_CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
 REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'service': '1/minute',

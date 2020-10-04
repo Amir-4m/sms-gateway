@@ -1,7 +1,9 @@
 import json
 import logging
 
-from django.test import TestCase, RequestFactory
+from django.conf import settings
+from django.core.cache import cache
+from django.test import RequestFactory, override_settings
 from django.urls import reverse
 from django.utils.encoding import force_text
 from mock import patch
@@ -26,6 +28,7 @@ class SendSMSBaseAPITestCase(APITestCase):
         logging.disable(logging.NOTSET)
 
 
+@override_settings(CACHES=settings.TEST_CACHES)
 class SendSMSAPITestCase(SendSMSBaseAPITestCase):
     @patch('apps.gateway.tasks.send_message.delay')
     def test_post_sms_valid(self, mock_method):
@@ -75,4 +78,54 @@ class SendSMSAPITestCase(SendSMSBaseAPITestCase):
             response,
             'there is no available sms gateway for this service!',
             status_code=status.HTTP_400_BAD_REQUEST
+        )
+
+
+class ServiceThrottleTestCase(SendSMSBaseAPITestCase):
+    def setUp(self):
+        super(ServiceThrottleTestCase, self).setUp()
+        cache.clear()
+
+    @patch('apps.gateway.tasks.send_message.delay')
+    def test_post_sms_throttled(self, mock_method):
+        url = reverse('send-message')
+        data = {
+            'data': [{'text': 'this is a test message.', 'phone_numbers': ['09123456789']}]
+        }
+        for _ in range(2):
+            response = self.client.post(url, data=data, format='json')
+
+        self.assertRaisesMessage(
+            AssertionError,
+            "Request was throttled. Expected available in 60 seconds."
+        )
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+        mock_method.assert_called_once_with(
+            sms_gateway_id=self.service.gateways.filter(
+                provider__is_enable=True,
+                is_enable=True).order_by('priority').first().id,
+            text='this is a test message.',
+            phone_numbers=['09123456789']
+        )
+
+    @patch('apps.gateway.tasks.send_message.delay')
+    def test_post_sms_throttled(self, mock_method):
+        url = reverse('send-message')
+        data = {
+            'data': [{'text': 'this is a test message.', 'phone_numbers': ['09123456789']}]
+        }
+        for _ in range(2):
+            response = self.client.post(url, data=data, format='json')
+
+        self.assertRaisesMessage(
+            AssertionError,
+            "Request was throttled. Expected available in 60 seconds."
+        )
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+        mock_method.assert_called_once_with(
+            sms_gateway_id=self.service.gateways.filter(
+                provider__is_enable=True,
+                is_enable=True).order_by('priority').first().id,
+            text='this is a test message.',
+            phone_numbers=['09123456789']
         )
