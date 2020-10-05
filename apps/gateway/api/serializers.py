@@ -19,6 +19,12 @@ class MessageSerializer(serializers.Serializer):
     )
     text = serializers.CharField(required=True)
 
+    def update(self, instance, validated_data):
+        raise NotImplementedError()
+
+    def create(self, validated_data):
+        raise NotImplementedError()
+
 
 class SendSMSSerializer(serializers.Serializer):
     data = serializers.ListField(child=MessageSerializer())

@@ -27,7 +27,7 @@ class SMSGatewayService:
         }
         client = zeep.Client(wsdl=wsdl, transport=self.transport)
         result = client.service.SendSms(**data)
-        logger.warning(
+        logger.info(
             f'sending rahyab sms result for sms_gateway {sms_gateway.id}, text: {text}, phones:{phone_numbers}'
         )
         return SentMessage.objects.create(
