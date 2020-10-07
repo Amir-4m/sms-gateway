@@ -28,12 +28,12 @@ class SMSGatewayService:
         client = zeep.Client(wsdl=wsdl, transport=self.transport)
         result = client.service.SendSms(**data)
         logger.info(
-            f'sending rahyab sms result for sms_gateway {sms_gateway.id}, text: {text}, phones:{phone_numbers}'
+            f'sending rahyab sms result for sms_gateway {sms_gateway.id}, text: {text}, phones:{phone_numbers} got result :{result}'
         )
         return SentMessage.objects.create(
             sms_gateway=sms_gateway,
             target_numbers=phone_numbers,
             text=text,
-            status=str(result.status.byte[0]),
+            status=f"{str(result.status.byte[0])} - {str(result.SendSmsResult)}",
             recipient_id=str(result.recId.long[0])
         )
