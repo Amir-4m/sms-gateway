@@ -47,8 +47,9 @@ class ServiceAuthentication(authentication.BaseAuthentication):
         payload.update({'service': service})
         return anonymous_user, payload  # authentication successful
 
+    @staticmethod
     @lru_cache(maxsize=None)
-    def authenticate_credentials(self, secret):
+    def authenticate_credentials(secret):
         """
         Returns an user of the existing service
         """
