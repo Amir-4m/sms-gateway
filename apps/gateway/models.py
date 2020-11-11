@@ -14,7 +14,7 @@ class Provider(models.Model):
     title = models.CharField(_('title'), max_length=120)
     properties = JSONField(_("properties"), default=dict)
     provider_code = models.CharField(_("provider code"), max_length=15, choices=PROVIDER_CODES, default=CODE_RAHYAB)
-    head_number = models.IntegerField(_('head number'))
+    head_number = models.CharField(_('head number'), max_length=25)
     is_enable = models.BooleanField(default=True)
 
     class Meta:
