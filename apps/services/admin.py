@@ -7,7 +7,7 @@ from apps.services.utils import random_secret_generator
 
 @admin.register(Service)
 class ServiceModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'is_enable', 'created_time', 'updated_time')
+    list_display = ('name', 'is_enable', 'created_time', 'updated_time')
     list_filter = ('is_enable',)
     readonly_fields = ('secret_key',)
 
