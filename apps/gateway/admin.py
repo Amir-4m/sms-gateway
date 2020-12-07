@@ -11,15 +11,15 @@ class ProviderAdmin(admin.ModelAdmin):
 
 
 @admin.register(SMSGateway)
-class ProviderAdmin(admin.ModelAdmin):
+class SMSGatewayAdmin(admin.ModelAdmin):
     list_display = ('service', 'provider', 'is_enable', 'priority', 'created_time', 'updated_time')
     list_filter = ('provider', 'service')
     search_fields = ('provider__head_number',)
 
 
 @admin.register(SentMessage)
-class ProviderAdmin(admin.ModelAdmin):
-    list_display = ('sms_gateway', 'target_numbers', 'status', 'recipient_id', 'created_time')
+class SentMessagesAdmin(admin.ModelAdmin):
+    list_display = ('phone_numbers', 'sms_gateway', 'result', 'recipient_id', 'created_time')
     list_filter = ('sms_gateway__provider', 'sms_gateway__service')
-    search_fields = ('sms_gateway__provider__head_number',)
-    readonly_fields = ('sms_gateway', 'target_numbers', 'status', 'recipient_id', 'text')
+    search_fields = ('target_number',)
+    readonly_fields = ('sms_gateway', 'phone_numbers', 'result', 'recipient_id', 'text')
