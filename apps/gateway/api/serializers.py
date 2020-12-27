@@ -28,13 +28,28 @@ class MessageSerializer(serializers.Serializer):
 
 class SendSMSSerializer(serializers.Serializer):
     data = serializers.ListField(child=MessageSerializer())
+    head_number = serializers.CharField(required=False)
 
     def validate(self, attrs):
         service = self.context['service']
-        sms_gateway = SMSGateway.objects.filter(
-            service=service,
-            provider__is_enable=True,
-            is_enable=True).order_by('priority').first()
+        head_number = attrs.get('head_number')
+        if head_number is not None:
+            try:
+                sms_gateway = SMSGateway.objects.get(
+                    service=service,
+                    provider__is_enable=True,
+                    is_enable=True,
+                    provider__head_number=head_number
+                )
+            except SMSGateway.DoesNotExist:
+                raise ValidationError(_('provider with this head number does not exists!'))
+        else:
+            sms_gateway = SMSGateway.objects.filter(
+                service=service,
+                provider__is_enable=True,
+                is_enable=True
+            ).order_by('priority').first()
+
         if sms_gateway is not None:
             attrs.update({'sms_gateway': sms_gateway})
             return attrs

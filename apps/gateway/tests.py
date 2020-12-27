@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils.encoding import force_text
 from mock import patch
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.test import APITestCase, APIClient
 
 from apps.services.models import Service
@@ -48,6 +49,40 @@ class SendSMSAPITestCase(SendSMSBaseAPITestCase):
             text='this is a test message.',
             phone_numbers=['09123456789']
         )
+
+    @patch('apps.gateway.tasks.send_message.delay')
+    def test_post_sms_valid_head_number(self, mock_method):
+        url = reverse('send-message')
+        data = {
+            'data': [{'text': 'this is a test message.', 'phone_numbers': ['09123456789']}],
+            'head_number': '1000'
+        }
+        response = self.client.post(url, data=data, format='json')
+        response_data = json.loads(force_text(response.content))
+
+        self.assertEqual(response_data, "messages created in queue.")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_method.assert_called_once_with(
+            sms_gateway_id=self.service.gateways.filter(
+                provider__is_enable=True,
+                is_enable=True).order_by('priority').first().id,
+            text='this is a test message.',
+            phone_numbers=['09123456789']
+        )
+
+    def test_post_sms_invalid_head_number(self):
+        url = reverse('send-message')
+        data = {
+            'data': [{'text': 'this is a test message.', 'phone_numbers': ['09123456789']}],
+            'head_number': '0000'
+        }
+        response = self.client.post(url, data=data, format='json')
+
+        self.assertRaisesMessage(
+            ValidationError,
+            'provider with this head number does not exists!'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_post_sms_invalid(self):
         url = reverse('send-message')
